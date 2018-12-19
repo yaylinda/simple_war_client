@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:simple_war_client/auth.dart';
+import 'package:simple_war_client/home_screen.dart';
 import 'package:simple_war_client/login2_screen.dart';
 import 'package:simple_war_client/login_screen_presenter.dart';
 import 'package:simple_war_client/models/user.dart';
@@ -42,7 +43,7 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
   }
 
   void _register() {
-    Navigator.push(_ctx, MaterialPageRoute(builder: (context) => RegisterScreen()));
+    Navigator.popAndPushNamed(_ctx, "/register");
   }
 
   void _showSnackBar(String text) {
@@ -53,7 +54,7 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
   @override
   onAuthStateChanged(AuthState state) {
     if(state == AuthState.LOGGED_IN)
-      Navigator.of(_ctx).pushReplacementNamed("/home");
+      Navigator.pushReplacementNamed(_ctx, "/home");
   }
 
   @override
@@ -77,7 +78,7 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
     var loginForm = new Column(
       children: <Widget>[
         new Text(
-          "Login to Simple War",
+          "Login",
           textScaleFactor: 2.0,
         ),
         new Form(
@@ -108,7 +109,7 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
     );
 
     return new Scaffold(
-      appBar: null,
+      appBar: new AppBar(title: new Text("Simple War")),
       key: scaffoldKey,
       body: new Container(
         child: new Center(
@@ -136,9 +137,7 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
   @override
   void onLoginSuccess(User user) async {
     setSessionToken(user.token).then((result) {
-      _showSnackBar(user.username);
       setState(() => _isLoading = false);
-
       var authStateProvider = new AuthStateProvider();
       authStateProvider.notify(AuthState.LOGGED_IN);
     });

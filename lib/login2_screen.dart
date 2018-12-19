@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:simple_war_client/auth.dart';
+import 'package:simple_war_client/home_screen.dart';
 import 'package:simple_war_client/login_screen.dart';
 import 'package:simple_war_client/login_screen_presenter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,7 +11,6 @@ import 'package:simple_war_client/models/user.dart';
 class RegisterScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return new RegisterScreenState();
   }
 }
@@ -42,7 +42,7 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
   }
 
   void _login() {
-    Navigator.push(_ctx, MaterialPageRoute(builder: (context) => LoginScreen()));
+    Navigator.popAndPushNamed(_ctx, "/login");
   }
 
   void _showSnackBar(String text) {
@@ -53,7 +53,7 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
   @override
   onAuthStateChanged(AuthState state) {
     if(state == AuthState.LOGGED_IN)
-      Navigator.of(_ctx).pushReplacementNamed("/home");
+      Navigator.pushReplacementNamed(_ctx, "/home");
   }
 
   @override
@@ -76,7 +76,7 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
     var registerForm = new Column(
       children: <Widget>[
         new Text(
-          "Register for Simple War",
+          "Register",
           textScaleFactor: 2.0,
         ),
         new Form(
@@ -114,7 +114,7 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
     );
 
     return new Scaffold(
-      appBar: null,
+      appBar: new AppBar(title: new Text("Simple War")),
       key: scaffoldKey,
       body: new Container(
         child: new Center(
@@ -142,9 +142,7 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
   @override
   void onLoginSuccess(User user) async {
     setSessionToken(user.token).then((result) {
-      _showSnackBar(user.username);
       setState(() => _isLoading = false);
-
       var authStateProvider = new AuthStateProvider();
       authStateProvider.notify(AuthState.LOGGED_IN);
     });
