@@ -6,7 +6,7 @@ enum AuthState {
 }
 
 abstract class AuthStateListener {
-  void onAuthStateChanged(AuthState state);
+  void onAuthStateChanged(AuthState state, String username);
 }
 
 class AuthStateProvider {
@@ -21,20 +21,20 @@ class AuthStateProvider {
   }
 
   void initState() async {
-    getSessionToken().then((value) {
+    getUsername().then((value) {
       if (value.length == 0) {
-        print('NOT LOGGED IN... sessionToken value was not found');
-        notify(AuthState.LOGGED_OUT);
+        print('NOT LOGGED IN... username was not found');
+        notify(AuthState.LOGGED_OUT, value);
       } else {
-        print('IS LOGGED IN... sessionToken value was found');
-        notify(AuthState.LOGGED_IN);
+        print('IS LOGGED IN... username was found');
+        notify(AuthState.LOGGED_IN, value);
       }
     });
   }
 
-  Future<String> getSessionToken() async {
+  Future<String> getUsername() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString("sessionToken") ?? '';
+    return prefs.getString("username") ?? '';
   }
 
   void subscribe(AuthStateListener listener) {
@@ -48,7 +48,7 @@ class AuthStateProvider {
     }
   }
 
-  void notify(AuthState state) {
-    _subscribers.forEach((AuthStateListener s) => s.onAuthStateChanged(state));
+  void notify(AuthState state, String username) {
+    _subscribers.forEach((AuthStateListener s) => s.onAuthStateChanged(state, username));
   }
 }

@@ -15,12 +15,4 @@ class User {
   String get token => _token;
   String get username => _username;
   String get email => _email;
-
-  Map<String, dynamic> toMap() {
-    var map = new Map<String, dynamic>();
-    map["token"] = _token;
-    map["username"] = _username;
-    map["email"] = _email;
-    return map;
-  }
 }

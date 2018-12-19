@@ -23,6 +23,7 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
   final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   String _username, _password;
+  User user;
 
   LoginScreenPresenter _presenter;
 
@@ -52,9 +53,9 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
   }
 
   @override
-  onAuthStateChanged(AuthState state) {
+  onAuthStateChanged(AuthState state, String username) {
     if(state == AuthState.LOGGED_IN)
-      Navigator.pushReplacementNamed(_ctx, "/home");
+      Navigator.pushReplacement(_ctx, new MaterialPageRoute(builder: (BuildContext context) => new HomeScreen(username: username)));
   }
 
   @override
@@ -136,15 +137,16 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
 
   @override
   void onLoginSuccess(User user) async {
-    setSessionToken(user.token).then((result) {
+    this.user = user;
+    setUsername(user.username).then((result) {
       setState(() => _isLoading = false);
       var authStateProvider = new AuthStateProvider();
-      authStateProvider.notify(AuthState.LOGGED_IN);
+      authStateProvider.notify(AuthState.LOGGED_IN, user.username);
     });
   }
 
-  Future<bool> setSessionToken(String sessionToken) async {
+  Future<bool> setUsername(String username) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.setString("token", sessionToken);
+    return prefs.setString("username", username);
   }
 }

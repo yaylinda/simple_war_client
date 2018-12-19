@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:simple_war_client/models/game_info.dart';
+import 'package:simple_war_client/models/game_info_list.dart';
 import 'package:simple_war_client/models/user.dart';
 import 'package:simple_war_client/network_util.dart';
 
@@ -10,6 +12,7 @@ class RestDatasource {
   static final BASE_URL = "http://localhost:8080";
   static final LOGIN_PATH = "/user/login";
   static final REGISTER_PATH = "/user/register";
+  static final GAME_PATH = "/game";
 
   Future<User> login(String username, String password) {
     print("Logging in...");
@@ -48,7 +51,17 @@ class RestDatasource {
     return _netUtil
         .post(loginUrl, body)
         .then((dynamic res) {
-      return new User.map(res);
-    });
+          return new User.map(res);
+        });
+  }
+
+  Future<GameInfoList> getGamesForUser(String username) {
+    print("Getting games...");
+    String gamesUrl = BASE_URL + GAME_PATH + "/$username";
+    return _netUtil
+        .get(gamesUrl)
+        .then((dynamic res) {
+          return new GameInfoList.map(res);
+        });
   }
 }
