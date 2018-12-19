@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:simple_war_client/auth.dart';
+import 'package:simple_war_client/login_screen.dart';
 import 'package:simple_war_client/login_screen_presenter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_war_client/models/user.dart';
@@ -41,7 +42,7 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
   }
 
   void _login() {
-    Navigator.of(_ctx).pushReplacementNamed("/login");
+    Navigator.push(_ctx, MaterialPageRoute(builder: (context) => LoginScreen()));
   }
 
   void _showSnackBar(String text) {

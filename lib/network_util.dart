@@ -22,9 +22,9 @@ class NetworkUtil {
       final String res = response.body;
       final int statusCode = response.statusCode;
 
-      print("Result... statusCode=$statusCode, body=$res");
+      print("Result: statusCode=$statusCode, body=$res");
 
-      if (statusCode < 200 || statusCode > 400) {
+      if (statusCode < 200 || statusCode >= 400) {
         throw new Exception("$res");
       }
 
@@ -43,9 +43,9 @@ class NetworkUtil {
       final String res = response.body;
       final int statusCode = response.statusCode;
 
-      print("Result... statusCode=$statusCode, body=$res");
+      print("Result: statusCode=$statusCode, body=$res");
 
-      if (statusCode < 200 || statusCode > 400) {
+      if (statusCode < 200 || statusCode >= 400) {
         throw new Exception("$res");
       }
 
