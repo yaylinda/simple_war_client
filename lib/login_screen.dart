@@ -87,7 +87,7 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
                 padding: const EdgeInsets.all(8.0),
                 child: new TextFormField(
                   onSaved: (val) => _username = val,
-                  decoration: new InputDecoration(labelText: "Username"),
+                  decoration: new InputDecoration(labelText: "Username or Email"),
                 ),
               ),
               new Padding(

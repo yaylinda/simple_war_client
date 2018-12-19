@@ -9,6 +9,8 @@ class NetworkUtil {
   factory NetworkUtil() => _instance;
 
   final JsonDecoder _decoder = new JsonDecoder();
+  final JsonEncoder _encoder = new JsonEncoder();
+  final Map<String, String> _defaultHeaders = {"Content-Type" : "application/json"};
 
   Future<dynamic> get(String url) {
     print("Making GET request to " + url);
@@ -20,27 +22,31 @@ class NetworkUtil {
       final String res = response.body;
       final int statusCode = response.statusCode;
 
-      if (statusCode < 200 || statusCode > 400 || json == null) {
-        throw new Exception("Error while fetching data");
+      print("Result... statusCode=$statusCode, body=$res");
+
+      if (statusCode < 200 || statusCode > 400) {
+        throw new Exception("$res");
       }
 
       return _decoder.convert(res);
     });
   }
 
-  Future<dynamic> post(String url, {Map headers, body, encoding}) {
+  Future<dynamic> post(String url, Map body) {
     print("Making POST request to " + url);
     print("...with body: " + body.toString());
 
     return http
-        .post(url, body: body, headers: headers, encoding: encoding)
+        .post(url, body: _encoder.convert(body), headers: _defaultHeaders)
         .then((http.Response response) {
 
       final String res = response.body;
       final int statusCode = response.statusCode;
 
-      if (statusCode < 200 || statusCode > 400 || json == null) {
-        throw new Exception("Error while fetching data");
+      print("Result... statusCode=$statusCode, body=$res");
+
+      if (statusCode < 200 || statusCode > 400) {
+        throw new Exception("$res");
       }
 
       return _decoder.convert(res);

@@ -8,40 +8,47 @@ class RestDatasource {
   NetworkUtil _netUtil = new NetworkUtil();
 
   static final BASE_URL = "http://localhost:8080";
-  static final LOGIN_PATH = "/login";
-  static final REGISTER_PATH = "/register";
+  static final LOGIN_PATH = "/user/login";
+  static final REGISTER_PATH = "/user/register";
 
   Future<User> login(String username, String password) {
+    print("Logging in...");
+    String loginUrl = BASE_URL + LOGIN_PATH;
 
-    String loginUrl = BASE_URL + LOGIN_PATH + "/$username/$password";
-    print("Calling url: " + loginUrl);
+    Map body;
+    if (username.contains("@")) {
+      body = {
+        "email" : username,
+        "password" : password
+      };
+    } else {
+      body = {
+        "username" : username,
+        "password" : password
+      };
+    }
 
     return _netUtil
-        .get(loginUrl)
+        .post(loginUrl, body)
         .then((dynamic res) {
-          print(res.toString());
-          if (res["player"]) {
-            return new User.map(res["player"]);
-          } else {
-            throw new Exception("Error logging in...");
-          }
+          return new User.map(res);
         });
   }
 
   Future<User> register(String username, String password, String email) {
+    print("Registering...");
+    String loginUrl = BASE_URL + REGISTER_PATH;
 
-    String loginUrl = BASE_URL + REGISTER_PATH + "/$username/$password/$email";
-    print("Calling url: " + loginUrl);
+    Map body = {
+      "username" : username,
+      "password" : password,
+      "email" : email
+    };
 
     return _netUtil
-        .get(loginUrl)
+        .post(loginUrl, body)
         .then((dynamic res) {
-      print(res.toString());
-      if (res["player"]) {
-        return new User.map(res["player"]);
-      } else {
-        throw new Exception("Error registering...");
-      }
+      return new User.map(res);
     });
   }
 }
