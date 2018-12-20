@@ -2,17 +2,23 @@ import 'package:simple_war_client/models/card.dart';
 
 class Cell {
 
-  String _state;
-  Card _card;
+  String state;
+  Card card;
 
-  Cell(this._state, this._card);
+  Cell({
+    this.state,
+    this.card,
+  });
 
-  Card get card => _card;
-  String get state => _state;
+  factory Cell.fromJSON(Map<String, dynamic> json) {
+    if (json == null) {
+      return null;
+    }
 
-  Cell.map(dynamic obj) {
-    this._state = obj["state"];
-    this._card = Card.map(obj["card"]);
+    return Cell(
+      state: json["state"],
+      card: Card.fromJSON(json["card"]),
+    );
   }
 
 }

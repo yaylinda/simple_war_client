@@ -34,7 +34,7 @@ class RestDatasource {
     return _netUtil
         .post(loginUrl, body)
         .then((dynamic res) {
-          return new User.map(res);
+          return new User.fromJSON(res);
         });
   }
 
@@ -51,7 +51,7 @@ class RestDatasource {
     return _netUtil
         .post(loginUrl, body)
         .then((dynamic res) {
-          return new User.map(res);
+          return new User.fromJSON(res);
         });
   }
 
@@ -61,7 +61,7 @@ class RestDatasource {
     return _netUtil
         .get(gamesUrl)
         .then((dynamic res) {
-          return (res as List).map((i) => Game.map(i)).toList();
+          return (res as List).map((i) => Game.fromJSON(i)).toList();
     });
   }
 
@@ -72,7 +72,7 @@ class RestDatasource {
     return _netUtil
         .get(url)
         .then((dynamic res) {
-      return new Game.map(res);
+      return new Game.fromJSON(res);
     });
   }
 }

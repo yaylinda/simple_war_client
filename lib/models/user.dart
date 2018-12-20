@@ -1,18 +1,24 @@
 class User {
 
-  String _token;
-  String _username;
-  String _email;
+  String token;
+  String username;
+  String email;
 
-  User(this._token, this._username, this._email);
+  User({
+    this.token, 
+    this.username, 
+    this.email,
+  });
 
-  User.map(dynamic obj) {
-    this._token = obj["token"];
-    this._username = obj["username"];
-    this._email = obj["email"];
+  factory User.fromJSON(Map<String, dynamic> json) {
+    if (json == null) {
+      return null;
+    }
+
+    return User(
+      token: json["token"],
+      username: json["username"],
+      email: json["email"],
+    );
   }
-
-  String get token => _token;
-  String get username => _username;
-  String get email => _email;
 }

@@ -5,8 +5,8 @@ class Card {
   int movement;
   double cost;
   String owner;
-  String specialAbility; // TODO v2
   int numTurnsOnBoard;
+  String specialAbility; // TODO v2
 
   Card({
     this.type,
@@ -14,21 +14,23 @@ class Card {
     this.movement,
     this.cost,
     this.owner,
+    this.numTurnsOnBoard,
     this.specialAbility,
-    this.numTurnsOnBoard});
+  });
 
-  factory Card.map(dynamic obj) {
-    if (obj == null) {
+  factory Card.fromJSON(Map<String, dynamic> json) {
+    if (json == null) {
       return null;
     }
+
     return Card(
-      type: obj["type"],
-      might: obj["might"],
-      movement: obj["movement"],
-      cost: obj["cost"],
-      owner: obj["owner"],
-      specialAbility: obj["specialAbility"],
-      numTurnsOnBoard: obj["numTurnsOnBoard"],
+      type: json["type"],
+      might: json["might"],
+      movement: json["movement"],
+      cost: json["cost"],
+      owner: json["owner"],
+      numTurnsOnBoard: json["numTurnsOnBoard"],
+      specialAbility: json["specialAbility"],
     );
   }
 
