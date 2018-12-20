@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_war_client/login_screen.dart';
 import 'package:simple_war_client/models/game_info.dart';
 import 'package:simple_war_client/models/game_info_list.dart';
 import 'package:simple_war_client/rest_ds.dart';
@@ -10,11 +12,42 @@ class HomeScreen extends StatelessWidget {
 
   HomeScreen({this.username});
 
+  void _createNewGame() {
+    print("create new game for $username");
+  }
+
+  Future<bool> setUsername(String username) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setString("username", username);
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return new Scaffold(
-        appBar: new AppBar(title: new Text("$username's Simple War")),
+        appBar: new AppBar(title: new Text("Simple War")),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+              children: <Widget>[
+                DrawerHeader(
+                  child: Text('Menu'),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                  ),
+                ),
+                ListTile(
+                  title: Text('Logout'),
+                  onTap: () {
+                    setUsername("").then((result) {
+                      print("logging out...");
+                      Navigator.popAndPushNamed(context, "/");
+                    });
+                  },
+                )
+              ]
+          )
+        ),
         body: FutureBuilder(
             future: api.getGamesForUser(username),
             builder: (context, snapshot) {
@@ -24,7 +57,11 @@ class HomeScreen extends StatelessWidget {
               return snapshot.hasData
                   ? GameListScreen(gameInfoList: snapshot.data)
                   : Center(child: CircularProgressIndicator());
-            })
+            }),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _createNewGame,
+          tooltip: "Create new game",
+          child: Icon(Icons.add))
     );
   }
 }
@@ -40,7 +77,7 @@ class GameListScreen extends StatelessWidget {
     return ListView.builder(
         itemCount: gameInfoList.games.length,
         itemBuilder: (BuildContext context, int index) {
-          return new GameInfoCard(game: gameInfoList.games[index]);
+          return GameInfoCard(game: gameInfoList.games[index]);
         });
   }
 }
@@ -53,6 +90,6 @@ class GameInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Text("Game against ${game.opponentName} | Score: ${game.points} vs. ${game.opponentPoints}");
+    return Text("Game against ${game.opponentName} | Score: ${game.points} vs. ${game.opponentPoints}");
   }
 }

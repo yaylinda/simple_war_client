@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'Simple War',
-      theme: new ThemeData(primarySwatch: Colors.green),
+      theme: new ThemeData(primarySwatch: Colors.blue),
       routes: routes,
     );
   }
