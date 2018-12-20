@@ -87,12 +87,39 @@ class GameListScreen extends StatelessWidget {
 
 class GameInfoCard extends StatelessWidget {
 
+  final RestDatasource api = new RestDatasource();
   final Game game;
 
   GameInfoCard({this.game});
 
   @override
   Widget build(BuildContext context) {
-    return Text("Game against ${game.opponentName} | Score: ${game.points} vs. ${game.opponentPoints} | My turn: ${game.currentTurn} | Status: ${game.status}");
+//    return Text("Game against ${game.opponentName} | Score: ${game.points} vs. ${game.opponentPoints} | My turn: ${game.currentTurn} | Status: ${game.status}");
+    String opponentName = this.game.opponentName == null ? "<TBD>" : this.game.opponentName;
+
+    return Card(
+      child: Column(
+        children: <Widget>[
+          ListTile(
+            title: Text("Simple War against ${opponentName}", style: TextStyle(fontWeight: FontWeight.w500)),
+            subtitle: Text("Score: ${this.game.points} vs. ${this.game.opponentPoints}\nStatus: ${game.status}"),
+            leading: Icon(
+              Icons.blur_linear,
+              color: Colors.blue
+            ),
+            trailing: Icon(
+              Icons.videogame_asset,
+              color: game.currentTurn ? Colors.green : Colors.red,
+            ),
+            onTap: () {
+              api.getGameByIdAndUsername(this.game.id, this.game.username).then((game) {
+                print("retrieved game with id=${game.id}");
+                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => GameScreen(game: game)));
+              });
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

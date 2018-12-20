@@ -24,7 +24,16 @@ class GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text("Simple War")),
-        body: Text("${game.id}")
+        body: Text("${game.id}"),
+//        body: Row(
+//          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//          children: <Widget>[
+//            Card(
+//              child: ,
+//            ), // my turn
+//            Card(), // opponent
+//            Card(), // stats
+//          ],),
     );
   }
 

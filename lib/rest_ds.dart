@@ -75,4 +75,15 @@ class RestDatasource {
       return new Game.fromJSON(res);
     });
   }
+
+  Future<Game> getGameByIdAndUsername(String gameId, String username) {
+    print("Getting game by id and username");
+    String url = BASE_URL + GAME_PATH + "/$gameId" + "/$username";
+
+    return _netUtil
+        .get(url)
+        .then((dynamic res) {
+      return new Game.fromJSON(res);
+    });
+  }
 }

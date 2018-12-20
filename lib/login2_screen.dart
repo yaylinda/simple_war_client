@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:simple_war_client/auth.dart';
 import 'package:simple_war_client/home_screen.dart';
-import 'package:simple_war_client/login_screen.dart';
 import 'package:simple_war_client/login_screen_presenter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_war_client/models/user.dart';
