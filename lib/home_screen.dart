@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:simple_war_client/login_screen.dart';
-import 'package:simple_war_client/models/game_info.dart';
-import 'package:simple_war_client/models/game_info_list.dart';
+import 'package:simple_war_client/game_screen.dart';
+import 'package:simple_war_client/models/game.dart';
 import 'package:simple_war_client/rest_ds.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -12,10 +11,6 @@ class HomeScreen extends StatelessWidget {
 
   HomeScreen({this.username});
 
-  void _createNewGame() {
-    print("create new game for $username");
-  }
-
   Future<bool> setUsername(String username) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setString("username", username);
@@ -23,9 +18,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return new Scaffold(
-        appBar: new AppBar(title: new Text("Simple War")),
+    print("HomeScreen build is called");
+    return Scaffold(
+        appBar: AppBar(title: Text("Simple War")),
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
@@ -59,7 +54,12 @@ class HomeScreen extends StatelessWidget {
                   : Center(child: CircularProgressIndicator());
             }),
         floatingActionButton: FloatingActionButton(
-          onPressed: _createNewGame,
+          onPressed: () {
+            api.startGame(username).then((game) {
+              print("created game with id=${game.id}");
+              Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => GameScreen(game: game)));
+            });
+          },
           tooltip: "Create new game",
           child: Icon(Icons.add))
     );
@@ -68,28 +68,31 @@ class HomeScreen extends StatelessWidget {
 
 class GameListScreen extends StatelessWidget {
 
-  final GameInfoList gameInfoList;
+  final List<Game> gameInfoList;
 
   GameListScreen({this.gameInfoList});
 
   @override
   Widget build(BuildContext context) {
+    print("GameListScreen build is called...");
+    print(gameInfoList.length);
+
     return ListView.builder(
-        itemCount: gameInfoList.games.length,
+        itemCount: gameInfoList.length,
         itemBuilder: (BuildContext context, int index) {
-          return GameInfoCard(game: gameInfoList.games[index]);
+          return GameInfoCard(game: gameInfoList[index]);
         });
   }
 }
 
 class GameInfoCard extends StatelessWidget {
 
-  final GameInfo game;
+  final Game game;
 
   GameInfoCard({this.game});
 
   @override
   Widget build(BuildContext context) {
-    return Text("Game against ${game.opponentName} | Score: ${game.points} vs. ${game.opponentPoints}");
+    return Text("Game against ${game.opponentName} | Score: ${game.points} vs. ${game.opponentPoints} | My turn: ${game.currentTurn} | Status: ${game.status}");
   }
 }
