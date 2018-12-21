@@ -80,57 +80,9 @@ class GameListScreen extends StatelessWidget {
     return ListView.builder(
         itemCount: gameInfoList.length,
         itemBuilder: (BuildContext context, int index) {
-          return GameInfoCard(
+          return GameInfoScreen(
             game: gameInfoList[index],
             navigateOnClick: true);
         });
-  }
-}
-
-class GameInfoCard extends StatelessWidget {
-
-  final RestDatasource api = new RestDatasource();
-  final Game game;
-  final bool navigateOnClick;
-
-  GameInfoCard({
-    this.game,
-    this.navigateOnClick
-  });
-
-  @override
-  Widget build(BuildContext context) {
-
-    String opponentName = this.game.opponentName == null ? "<TBD>" : this.game.opponentName;
-
-    return Card(
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            title: Text("Simple War against ${opponentName}", style: TextStyle(fontWeight: FontWeight.w500)),
-            subtitle: Text("Score: ${this.game.points} vs. ${this.game.opponentPoints}\nStatus: ${game.status}"),
-            leading: Icon(
-              Icons.blur_linear,
-              color: Colors.blue
-            ),
-            trailing: Icon(
-              Icons.videogame_asset,
-              color: game.currentTurn ? Colors.green : Colors.red,
-            ),
-            onTap: () {
-              if (this.navigateOnClick) {
-                api.getGameByIdAndUsername(this.game.id, this.game.username)
-                    .then((game) {
-                  print("retrieved game with id=${game.id}");
-                  Navigator.push(context, MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          GameScreen(game: game)));
-                });
-              }
-            },
-          ),
-        ],
-      ),
-    );
   }
 }
