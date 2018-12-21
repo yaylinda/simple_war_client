@@ -89,9 +89,9 @@ class RestDatasource {
     });
   }
 
-  Future<Game> endTurnByIdAndUsername(String gameId, String username) {
+  Future<Game> endTurnByIdAndUsername(String gameId, String username, bool discard) {
     print("End turn by id and username");
-    String url = BASE_URL + END_TURN_PATH + "/$gameId" + "/$username";
+    String url = BASE_URL + END_TURN_PATH + "/$gameId/$username?discard=$discard";
 
     return _netUtil
         .get(url)
@@ -100,14 +100,4 @@ class RestDatasource {
     });
   }
 
-  Future<Game> discardHandByIdAndUsername(String gameId, String username) {
-    print("Discard hand by id and username");
-    String url = BASE_URL + DISCARD_HAND_PATH + "/$gameId" + "/$username";
-
-    return _netUtil
-        .get(url)
-        .then((dynamic res) {
-      return new Game.fromJSON(res);
-    });
-  }
 }

@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:simple_war_client/service/auth.dart';
 import 'package:simple_war_client/screens/home_screen.dart';
-import 'package:simple_war_client/screens/register_screen.dart';
+import 'package:simple_war_client/screens/login2_screen.dart';
 import 'package:simple_war_client/screens/login_screen_presenter.dart';
 import 'package:simple_war_client/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LoginScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return new LoginScreenState();
   }
 }
@@ -20,8 +19,6 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
   BuildContext _ctx;
 
   bool _isLoading = false;
-  final formKey = new GlobalKey<FormState>();
-  final scaffoldKey = new GlobalKey<ScaffoldState>();
   String _username, _password;
   User user;
 
@@ -34,13 +31,8 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
   }
 
   void _submit() {
-    final form = formKey.currentState;
-
-    if (form.validate()) {
-      setState(() => _isLoading = true);
-      form.save();
-      _presenter.doLogin(_username, _password);
-    }
+    setState(() => _isLoading = true);
+    _presenter.doLogin(_username, _password);
   }
 
   void _register() {
@@ -48,8 +40,7 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
   }
 
   void _showSnackBar(String text) {
-    scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(text)));
+    Scaffold.of(_ctx).showSnackBar(new SnackBar(content: new Text(text)));
   }
 
   @override
@@ -83,7 +74,6 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
           textScaleFactor: 2.0,
         ),
         new Form(
-          key: formKey,
           child: new Column(
             children: <Widget>[
               new Padding(
@@ -111,7 +101,6 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
 
     return new Scaffold(
       appBar: new AppBar(title: new Text("Simple War")),
-      key: scaffoldKey,
       body: new Container(
         child: new Center(
           child: new ClipRect(

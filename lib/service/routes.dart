@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:simple_war_client/screens/home_screen.dart';
-import 'package:simple_war_client/screens/register_screen.dart';
 import 'package:simple_war_client/screens/login_screen.dart';
 
 final routes = {

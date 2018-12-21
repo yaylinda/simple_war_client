@@ -397,35 +397,28 @@ class ButtonScreen extends StatelessWidget {
     this.parentState,
   });
 
+  RaisedButton createEndTurnButton(String buttonText, bool discardHand) {
+    return RaisedButton(
+      child: Text(buttonText),
+      onPressed: !this.isEnabled ? null : () {
+        print("pressed $buttonText");
+        api.endTurnByIdAndUsername(this.gameId, this.username, discardHand).then((game) {
+          print("got updated game");
+          this.parentState.setState(() {
+            this.parentState.game = game;
+          });
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
       child: Column(
         children: <Widget>[
-          RaisedButton(
-            child: Text("Commit Card and End Turn"),
-            onPressed: !this.isEnabled ? null : () {
-              print("pressed Commit Cards and End Turn");
-              api.endTurnByIdAndUsername(this.gameId, this.username).then((game) {
-                print("got updated game");
-                this.parentState.setState(() {
-                  this.parentState.game = game;
-                });
-              });
-            },
-          ),
-          RaisedButton(
-            child: Text("Discard Hand and End Turn"),
-            onPressed: !this.isEnabled ? null : () {
-              print("pressed Discard Hand and End Turn");
-              api.discardHandByIdAndUsername(this.gameId, this.username).then((game) {
-                print("got updated game");
-                this.parentState.setState(() {
-                  this.parentState.game = game;
-                });
-              });
-            },
-          ),
+          createEndTurnButton("Commit Cards and End Turn", false),
+          createEndTurnButton("Discard Hand and End Turn", true),
         ],
       ),
     );
