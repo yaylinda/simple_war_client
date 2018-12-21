@@ -1,4 +1,4 @@
-import 'package:simple_war_client/models/card.dart';
+import 'package:simple_war_client/models/game_card.dart';
 import 'package:simple_war_client/models/cell.dart';
 
 class Game {
@@ -15,7 +15,7 @@ class Game {
   int numCardsPlayed;
   int numRows;
   int numCols;
-  List<Card> cards;
+  List<GameCard> cards;
   List<List<Cell>> board;
   List<List<Cell>> previousBoard;
 
@@ -71,7 +71,7 @@ class Game {
       numCardsPlayed: json["numCardsPlayed"],
       numRows: json["numRows"],
       numCols: json["numCols"],
-      cards: (json["cards"] as List).map((i) => Card.fromJSON(i)).toList(),
+      cards: (json["cards"] as List).map((i) => GameCard.fromJSON(i)).toList(),
       board: parsedBoard,
       previousBoard: parsedPreviousBoard,
     );

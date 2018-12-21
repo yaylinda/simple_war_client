@@ -1,4 +1,4 @@
-class Card {
+class GameCard {
 
   String type;
   int might;
@@ -8,7 +8,7 @@ class Card {
   int numTurnsOnBoard;
   String specialAbility; // TODO v2
 
-  Card({
+  GameCard({
     this.type,
     this.might,
     this.movement,
@@ -18,12 +18,12 @@ class Card {
     this.specialAbility,
   });
 
-  factory Card.fromJSON(Map<String, dynamic> json) {
+  factory GameCard.fromJSON(Map<String, dynamic> json) {
     if (json == null) {
       return null;
     }
 
-    return Card(
+    return GameCard(
       type: json["type"],
       might: json["might"],
       movement: json["movement"],

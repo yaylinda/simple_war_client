@@ -1,13 +1,13 @@
-import 'package:simple_war_client/models/card.dart';
+import 'package:simple_war_client/models/game_card.dart';
 
 class Cell {
 
   String state;
-  Card card;
+  GameCard gameCard;
 
   Cell({
     this.state,
-    this.card,
+    this.gameCard,
   });
 
   factory Cell.fromJSON(Map<String, dynamic> json) {
@@ -17,7 +17,7 @@ class Cell {
 
     return Cell(
       state: json["state"],
-      card: Card.fromJSON(json["card"]),
+      gameCard: GameCard.fromJSON(json["card"]),
     );
   }
 

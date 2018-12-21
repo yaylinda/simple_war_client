@@ -80,7 +80,9 @@ class GameListScreen extends StatelessWidget {
     return ListView.builder(
         itemCount: gameInfoList.length,
         itemBuilder: (BuildContext context, int index) {
-          return GameInfoCard(game: gameInfoList[index]);
+          return GameInfoCard(
+            game: gameInfoList[index],
+            navigateOnClick: true);
         });
   }
 }
@@ -89,12 +91,16 @@ class GameInfoCard extends StatelessWidget {
 
   final RestDatasource api = new RestDatasource();
   final Game game;
+  final bool navigateOnClick;
 
-  GameInfoCard({this.game});
+  GameInfoCard({
+    this.game,
+    this.navigateOnClick
+  });
 
   @override
   Widget build(BuildContext context) {
-//    return Text("Game against ${game.opponentName} | Score: ${game.points} vs. ${game.opponentPoints} | My turn: ${game.currentTurn} | Status: ${game.status}");
+
     String opponentName = this.game.opponentName == null ? "<TBD>" : this.game.opponentName;
 
     return Card(
@@ -112,10 +118,15 @@ class GameInfoCard extends StatelessWidget {
               color: game.currentTurn ? Colors.green : Colors.red,
             ),
             onTap: () {
-              api.getGameByIdAndUsername(this.game.id, this.game.username).then((game) {
-                print("retrieved game with id=${game.id}");
-                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => GameScreen(game: game)));
-              });
+              if (this.navigateOnClick) {
+                api.getGameByIdAndUsername(this.game.id, this.game.username)
+                    .then((game) {
+                  print("retrieved game with id=${game.id}");
+                  Navigator.push(context, MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          GameScreen(game: game)));
+                });
+              }
             },
           ),
         ],
