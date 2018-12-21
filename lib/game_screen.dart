@@ -159,13 +159,19 @@ class GameBoardScreen extends StatelessWidget {
     return Card(
       child: Column(
         children: this.game.board.map((row) {
+          int rowNum = this.game.board.indexOf(row);
           return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: row.map((c) {
-                return CellScreen(
-                    cell: c,
-                    username: this.game.username);
-              }).toList());
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: row.map((c) {
+              int colNum = row.indexOf(c);
+              return CellScreen(
+                cell: c,
+                username: this.game.username,
+                row: rowNum,
+                col: colNum,
+              );
+            }).toList(),
+          );
         }).toList(),
       )
     );
@@ -177,28 +183,40 @@ class CellScreen extends StatelessWidget {
 
   final Cell cell;
   final String username;
+  final int row;
+  final int col;
 
-  CellScreen({this.cell, this.username});
+  CellScreen({
+    this.cell,
+    this.username,
+    this.row,
+    this.col,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: GameCardScreen(
-        gameCard: this.cell.gameCard,
-        username: this.username,
+    return GestureDetector(
+      child: Container(
+        child: GameCardScreen(
+          gameCard: this.cell.gameCard,
+          username: this.username,
+        ),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+        ),
+        margin: EdgeInsets.only(
+          top: 6.0,
+          bottom: 6.0,
+          left: 6.0,
+          right: 6.0,
+        ),
       ),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-      ),
-      margin: EdgeInsets.only(
-        top: 6.0,
-        bottom: 6.0,
-        left: 6.0,
-        right: 6.0,
-      ),
+      onTap: () {
+        print("tapped... row:${this.row}, col:${this.col} - ${this.cell.state}");
+      },
     );
-  }
 
+  }
 }
 
 class GameCardScreen extends StatelessWidget {
@@ -206,7 +224,10 @@ class GameCardScreen extends StatelessWidget {
   final GameCard gameCard;
   final String username;
 
-  GameCardScreen({this.gameCard, this.username});
+  GameCardScreen({
+    this.gameCard,
+    this.username
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -223,36 +244,34 @@ class GameCardScreen extends StatelessWidget {
       );
     }
 
-    IconData cardIcon = this.gameCard.type == "TROOP" ? Icons.people : Icons.location_city;
+    IconData cardIcon = this.gameCard.type == "TROOP" ? Icons.people : Icons.domain;
     MaterialColor cardIconColor = this.gameCard.owner == this.username ? Colors.green : Colors.red;
 
-    return Container(
-      child: Row(
-        children: <Widget>[
-          Stack(
-            alignment: AlignmentDirectional.center,
-            children: <Widget>[
-              Icon(
-                cardIcon,
-                color: cardIconColor,
-                size: cardIconSize,
-              ),
-              Icon(
-                Icons.radio_button_checked,
-                color: Colors.blueGrey,
-                size: 48.0,
-              ),
-              Text(
-                  "${this.gameCard.might}",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500
-                  )
-              )
-            ],
-          )
-        ],
-      ),
+    return Row(
+      children: <Widget>[
+        Stack(
+          alignment: AlignmentDirectional.center,
+          children: <Widget>[
+            Icon(
+              cardIcon,
+              color: cardIconColor,
+              size: cardIconSize,
+            ),
+            Icon(
+              Icons.radio_button_checked,
+              color: Colors.blueGrey,
+              size: 48.0,
+            ),
+            Text(
+                "${this.gameCard.might}",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500
+                ),
+            ),
+          ],
+        )
+      ],
     );
   }
 }
@@ -269,12 +288,14 @@ class HandScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: hand.map((c) {
-            return GameCardScreen(
-                gameCard: c,
-                username: c.owner);
-          }).toList(),
+          int handIndex = hand.indexOf(c);
+          return HandCardScreen(
+            gameCard: c,
+            handIndex: handIndex,
+          );
+        }).toList(),
       ),
     );
   }
@@ -284,18 +305,79 @@ class HandScreen extends StatelessWidget {
 class HandCardScreen extends StatelessWidget {
 
   final GameCard gameCard;
+  final int handIndex;
 
   HandCardScreen({
     this.gameCard,
+    this.handIndex,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Text("${this.gameCard.type}"),
+
+    IconData cardIcon = this.gameCard.type == "TROOP" ? Icons.people : Icons.domain;
+
+    return GestureDetector(
+      child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+          ),
+          margin: EdgeInsets.only(
+            top: 6.0,
+            bottom: 6.0,
+            left: 3.0,
+            right: 3.0,
+          ),
+          child: Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Icon(
+                    cardIcon,
+                    color: Colors.green,
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Icon(
+                    Icons.radio_button_checked,
+                    color: Colors.blueGrey,
+                  ),
+                  Text(
+                    "${this.gameCard.might}",
+                    style: TextStyle(
+                      color: Colors.blueGrey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Icon(
+                    Icons.monetization_on,
+                    color: Colors.blueGrey,
+                  ),
+                  Text(
+                    "${this.gameCard.cost}",
+                    style: TextStyle(
+                      color: Colors.blueGrey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          )
+      ),
+      onTap: () {
+        print("tapped... handIndex: ${this.handIndex} - ${this.gameCard.type}");
+      },
     );
   }
-
 }
 
 class ButtonScreen extends StatelessWidget {
@@ -320,7 +402,7 @@ class ButtonScreen extends StatelessWidget {
           RaisedButton(
             child: Text("Discard Hand and End Turn"),
             onPressed: () {
-              print("Discard Hand and End Turn");
+              print("pressed Discard Hand and End Turn");
             },
           )
         ],
