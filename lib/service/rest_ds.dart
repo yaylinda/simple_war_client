@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:simple_war_client/models/game.dart';
 import 'package:simple_war_client/models/user.dart';
-import 'package:simple_war_client/network_util.dart';
+import 'package:simple_war_client/service/network_util.dart';
 
 class RestDatasource {
 

@@ -1,31 +1,33 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:simple_war_client/auth.dart';
-import 'package:simple_war_client/home_screen.dart';
-import 'package:simple_war_client/login_screen_presenter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_war_client/service/auth.dart';
+import 'package:simple_war_client/screens/home_screen.dart';
+import 'package:simple_war_client/screens/register_screen.dart';
+import 'package:simple_war_client/screens/login_screen_presenter.dart';
 import 'package:simple_war_client/models/user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class RegisterScreen extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return new RegisterScreenState();
+    // TODO: implement createState
+    return new LoginScreenState();
   }
 }
 
-class RegisterScreenState extends State<RegisterScreen> implements LoginScreenContract, AuthStateListener {
+class LoginScreenState extends State<LoginScreen> implements LoginScreenContract, AuthStateListener {
   BuildContext _ctx;
 
   bool _isLoading = false;
   final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
-  String _username, _password, _email;
+  String _username, _password;
   User user;
 
   LoginScreenPresenter _presenter;
 
-  RegisterScreenState() {
+  LoginScreenState() {
     _presenter = new LoginScreenPresenter(this);
     var authStateProvider = new AuthStateProvider();
     authStateProvider.subscribe(this);
@@ -37,12 +39,12 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
     if (form.validate()) {
       setState(() => _isLoading = true);
       form.save();
-      _presenter.doRegister(_username, _password, _email);
+      _presenter.doLogin(_username, _password);
     }
   }
 
-  void _login() {
-    Navigator.popAndPushNamed(_ctx, "/login");
+  void _register() {
+    Navigator.popAndPushNamed(_ctx, "/register");
   }
 
   void _showSnackBar(String text) {
@@ -61,22 +63,23 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
 
     _ctx = context;
 
-    var registerBtn = new RaisedButton(
-      onPressed: _submit,
-      child: new Text("REGISTER"),
-      color: Colors.amber,
-    );
-
     var loginBtn = new RaisedButton(
-      onPressed: _login,
+      onPressed: _submit,
       child: new Text("LOGIN"),
       color: Colors.green,
     );
 
-    var registerForm = new Column(
+    var registerBtn = new RaisedButton(
+      onPressed: _register,
+      child: new Text("REGISTER"),
+      color: Colors.amber,
+    );
+
+
+    var loginForm = new Column(
       children: <Widget>[
         new Text(
-          "Register",
+          "Login",
           textScaleFactor: 2.0,
         ),
         new Form(
@@ -87,7 +90,7 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
                 padding: const EdgeInsets.all(8.0),
                 child: new TextFormField(
                   onSaved: (val) => _username = val,
-                  decoration: new InputDecoration(labelText: "Username"),
+                  decoration: new InputDecoration(labelText: "Username or Email"),
                 ),
               ),
               new Padding(
@@ -97,18 +100,11 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
                   decoration: new InputDecoration(labelText: "Password"),
                 ),
               ),
-              new Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: new TextFormField(
-                  onSaved: (val) => _email = val,
-                  decoration: new InputDecoration(labelText: "Email Address"),
-                ),
-              ),
             ],
           ),
         ),
-        _isLoading ? new CircularProgressIndicator() : registerBtn,
-        loginBtn
+        _isLoading ? new CircularProgressIndicator() : loginBtn,
+        registerBtn
       ],
       crossAxisAlignment: CrossAxisAlignment.center,
     );
@@ -122,9 +118,9 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
             child: new BackdropFilter(
               filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: new Container(
-                child: registerForm,
-                height: 400.0,
-                width: 300.0,
+                child: loginForm,
+                height: 300.0,
+                width: 300.0
               ),
             ),
           ),

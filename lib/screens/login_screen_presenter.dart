@@ -1,5 +1,5 @@
 import 'package:simple_war_client/models/user.dart';
-import 'package:simple_war_client/rest_ds.dart';
+import 'package:simple_war_client/service/rest_ds.dart';
 
 abstract class LoginScreenContract {
   void onLoginSuccess(User user);

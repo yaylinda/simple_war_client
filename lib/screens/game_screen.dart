@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_war_client/models/cell.dart';
 import 'package:simple_war_client/models/game.dart';
 import 'package:simple_war_client/models/game_card.dart';
-import 'package:simple_war_client/rest_ds.dart';
+import 'package:simple_war_client/service/rest_ds.dart';
 
 class GameScreen extends StatefulWidget {
 

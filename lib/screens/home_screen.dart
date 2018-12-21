@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:simple_war_client/game_screen.dart';
+import 'package:simple_war_client/screens/game_screen.dart';
 import 'package:simple_war_client/models/game.dart';
-import 'package:simple_war_client/rest_ds.dart';
+import 'package:simple_war_client/service/rest_ds.dart';
 
 class HomeScreen extends StatelessWidget {
 

@@ -1,33 +1,31 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:simple_war_client/auth.dart';
-import 'package:simple_war_client/home_screen.dart';
-import 'package:simple_war_client/login2_screen.dart';
-import 'package:simple_war_client/login_screen_presenter.dart';
-import 'package:simple_war_client/models/user.dart';
+import 'package:simple_war_client/service/auth.dart';
+import 'package:simple_war_client/screens/home_screen.dart';
+import 'package:simple_war_client/screens/login_screen_presenter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_war_client/models/user.dart';
 
-class LoginScreen extends StatefulWidget {
+class RegisterScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return new LoginScreenState();
+    return new RegisterScreenState();
   }
 }
 
-class LoginScreenState extends State<LoginScreen> implements LoginScreenContract, AuthStateListener {
+class RegisterScreenState extends State<RegisterScreen> implements LoginScreenContract, AuthStateListener {
   BuildContext _ctx;
 
   bool _isLoading = false;
   final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
-  String _username, _password;
+  String _username, _password, _email;
   User user;
 
   LoginScreenPresenter _presenter;
 
-  LoginScreenState() {
+  RegisterScreenState() {
     _presenter = new LoginScreenPresenter(this);
     var authStateProvider = new AuthStateProvider();
     authStateProvider.subscribe(this);
@@ -39,12 +37,12 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
     if (form.validate()) {
       setState(() => _isLoading = true);
       form.save();
-      _presenter.doLogin(_username, _password);
+      _presenter.doRegister(_username, _password, _email);
     }
   }
 
-  void _register() {
-    Navigator.popAndPushNamed(_ctx, "/register");
+  void _login() {
+    Navigator.popAndPushNamed(_ctx, "/login");
   }
 
   void _showSnackBar(String text) {
@@ -63,23 +61,22 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
 
     _ctx = context;
 
-    var loginBtn = new RaisedButton(
-      onPressed: _submit,
-      child: new Text("LOGIN"),
-      color: Colors.green,
-    );
-
     var registerBtn = new RaisedButton(
-      onPressed: _register,
+      onPressed: _submit,
       child: new Text("REGISTER"),
       color: Colors.amber,
     );
 
+    var loginBtn = new RaisedButton(
+      onPressed: _login,
+      child: new Text("LOGIN"),
+      color: Colors.green,
+    );
 
-    var loginForm = new Column(
+    var registerForm = new Column(
       children: <Widget>[
         new Text(
-          "Login",
+          "Register",
           textScaleFactor: 2.0,
         ),
         new Form(
@@ -90,7 +87,7 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
                 padding: const EdgeInsets.all(8.0),
                 child: new TextFormField(
                   onSaved: (val) => _username = val,
-                  decoration: new InputDecoration(labelText: "Username or Email"),
+                  decoration: new InputDecoration(labelText: "Username"),
                 ),
               ),
               new Padding(
@@ -100,11 +97,18 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
                   decoration: new InputDecoration(labelText: "Password"),
                 ),
               ),
+              new Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: new TextFormField(
+                  onSaved: (val) => _email = val,
+                  decoration: new InputDecoration(labelText: "Email Address"),
+                ),
+              ),
             ],
           ),
         ),
-        _isLoading ? new CircularProgressIndicator() : loginBtn,
-        registerBtn
+        _isLoading ? new CircularProgressIndicator() : registerBtn,
+        loginBtn
       ],
       crossAxisAlignment: CrossAxisAlignment.center,
     );
@@ -118,9 +122,9 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
             child: new BackdropFilter(
               filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: new Container(
-                child: loginForm,
-                height: 300.0,
-                width: 300.0
+                child: registerForm,
+                height: 400.0,
+                width: 300.0,
               ),
             ),
           ),

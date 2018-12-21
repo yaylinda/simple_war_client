@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:simple_war_client/routes.dart';
+import 'package:simple_war_client/service/routes.dart';
 
 void main() => runApp(MyApp());
 
