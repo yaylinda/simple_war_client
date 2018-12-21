@@ -167,12 +167,9 @@ class GameInfoScreen extends StatelessWidget {
         ),
         onTap: () {
           if (this.navigateOnClick) {
-            api.getGameByIdAndUsername(this.game.id, this.game.username)
-                .then((game) {
+            api.getGameByIdAndUsername(this.game.id, this.game.username).then((game) {
               print("retrieved game with id=${game.id}");
-              Navigator.pushReplacement(context, MaterialPageRoute(
-                  builder: (BuildContext context) =>
-                      GameScreen(game: game)));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => GameScreen(game: game)));
             });
           }
         },
