@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_war_client/models/cell.dart';
 import 'package:simple_war_client/models/game.dart';
 import 'package:simple_war_client/models/game_card.dart';
+import 'package:simple_war_client/screens/home_screen.dart';
 import 'package:simple_war_client/service/rest_ds.dart';
 
 class GameScreen extends StatefulWidget {
@@ -25,78 +26,42 @@ class GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Simple War")),
-      body: Column(
-        children: <Widget>[
-          GameInfoScreen(
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Simple War"),
+          leading: new IconButton(
+            icon: new Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomeScreen(username: this.game.username)));
+            },
+          ),
+        ),
+        body: Column(
+          children: <Widget>[
+            GameInfoScreen(
               game: this.game,
               navigateOnClick: false,
-          ),
-          GameStatScreen(
-            game: this.game,
-          ),
-          GameBoardScreen(
+            ),
+            GameStatScreen(
               game: this.game,
-          ),
-          HandScreen(
-            hand: this.game.cards,
-          ),
-          ButtonScreen(
-            gameId: this.game.id,
-            username: this.game.username,
-            isEnabled: this.game.currentTurn,
-            parentState: this,
-          )
-        ],
-      ),
-      backgroundColor: Colors.lightBlueAccent,
-    );
-  }
-}
-
-class GameInfoScreen extends StatelessWidget {
-
-  final RestDatasource api = new RestDatasource();
-  final Game game;
-  final bool navigateOnClick;
-
-  GameInfoScreen({
-    this.game,
-    this.navigateOnClick
-  });
-
-  @override
-  Widget build(BuildContext context) {
-
-    String opponentName = this.game.opponentName == null ? "<TBD>" : this.game.opponentName;
-
-    return Card(
-      child: ListTile(
-        title: Text(
-            "Simple War against ${opponentName}",
-            style: TextStyle(fontWeight: FontWeight.w500),
+            ),
+            GameBoardScreen(
+              game: this.game,
+            ),
+            HandScreen(
+              hand: this.game.cards,
+            ),
+            ButtonScreen(
+              gameId: this.game.id,
+              username: this.game.username,
+              isEnabled: this.game.currentTurn,
+              parentState: this,
+            )
+          ],
         ),
-        subtitle: Text("Score: ${this.game.points} vs. ${this.game.opponentPoints}\nStatus: ${game.status}"),
-        leading: Icon(
-            Icons.blur_linear,
-            color: Colors.blue
-        ),
-        trailing: Icon(
-          Icons.videogame_asset,
-          color: game.currentTurn ? Colors.green : Colors.red,
-        ),
-        onTap: () {
-          if (this.navigateOnClick) {
-            api.getGameByIdAndUsername(this.game.id, this.game.username)
-                .then((game) {
-              print("retrieved game with id=${game.id}");
-              Navigator.push(context, MaterialPageRoute(
-                  builder: (BuildContext context) =>
-                      GameScreen(game: game)));
-            });
-          }
-        },
+        backgroundColor: Colors.lightBlueAccent,
       ),
     );
   }
