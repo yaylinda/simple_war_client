@@ -18,6 +18,8 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
   BuildContext _ctx;
 
   bool _isLoading = false;
+  final formKey = new GlobalKey<FormState>();
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
   String _username, _password, _email;
   User user;
 
@@ -30,16 +32,22 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
   }
 
   void _submit() {
+    final form = formKey.currentState;
+
+    if (form.validate()) {
       setState(() => _isLoading = true);
+      form.save();
       _presenter.doRegister(_username, _password, _email);
+    }
   }
 
   void _login() {
-    Navigator.popAndPushNamed(_ctx, "/login");
+    Navigator.pushReplacementNamed(_ctx, "/login");
   }
 
   void _showSnackBar(String text) {
-    Scaffold.of(_ctx).showSnackBar(new SnackBar(content: new Text(text)));
+    scaffoldKey.currentState
+        .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
   @override
@@ -72,6 +80,7 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
           textScaleFactor: 2.0,
         ),
         new Form(
+          key: formKey,
           child: new Column(
             children: <Widget>[
               new Padding(
@@ -106,6 +115,7 @@ class RegisterScreenState extends State<RegisterScreen> implements LoginScreenCo
 
     return new Scaffold(
       appBar: new AppBar(title: new Text("Simple War")),
+      key: scaffoldKey,
       body: new Container(
         child: new Center(
           child: new ClipRect(

@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LoginScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
+    // TODO: implement createState
     return new LoginScreenState();
   }
 }
@@ -19,6 +20,8 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
   BuildContext _ctx;
 
   bool _isLoading = false;
+  final formKey = new GlobalKey<FormState>();
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
   String _username, _password;
   User user;
 
@@ -31,16 +34,22 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
   }
 
   void _submit() {
-    setState(() => _isLoading = true);
-    _presenter.doLogin(_username, _password);
+    final form = formKey.currentState;
+
+    if (form.validate()) {
+      setState(() => _isLoading = true);
+      form.save();
+      _presenter.doLogin(_username, _password);
+    }
   }
 
   void _register() {
-    Navigator.popAndPushNamed(_ctx, "/register");
+    Navigator.pushReplacementNamed(_ctx, "/register");
   }
 
   void _showSnackBar(String text) {
-    Scaffold.of(_ctx).showSnackBar(new SnackBar(content: new Text(text)));
+    scaffoldKey.currentState
+        .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
   @override
@@ -74,6 +83,7 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
           textScaleFactor: 2.0,
         ),
         new Form(
+          key: formKey,
           child: new Column(
             children: <Widget>[
               new Padding(
@@ -101,15 +111,16 @@ class LoginScreenState extends State<LoginScreen> implements LoginScreenContract
 
     return new Scaffold(
       appBar: new AppBar(title: new Text("Simple War")),
+      key: scaffoldKey,
       body: new Container(
         child: new Center(
           child: new ClipRect(
             child: new BackdropFilter(
               filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: new Container(
-                child: loginForm,
-                height: 300.0,
-                width: 300.0
+                  child: loginForm,
+                  height: 300.0,
+                  width: 300.0
               ),
             ),
           ),
