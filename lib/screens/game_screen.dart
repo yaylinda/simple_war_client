@@ -12,7 +12,6 @@ class GameScreen extends StatefulWidget {
 
   @override
   GameScreenState createState() => new GameScreenState(game: game);
-
 }
 
 class GameScreenState extends State<GameScreen> {
@@ -38,13 +37,16 @@ class GameScreenState extends State<GameScreen> {
             game: this.game,
           ),
           GameBoardScreen(
-              game: this.game
+              game: this.game,
           ),
           HandScreen(
-            hand: this.game.cards
+            hand: this.game.cards,
           ),
           ButtonScreen(
+            gameId: this.game.id,
             username: this.game.username,
+            isEnabled: this.game.currentTurn,
+            parentState: this,
           )
         ],
       ),
@@ -382,10 +384,17 @@ class HandCardScreen extends StatelessWidget {
 
 class ButtonScreen extends StatelessWidget {
 
+  final RestDatasource api = new RestDatasource();
+  final String gameId;
   final String username;
+  final bool isEnabled;
+  final GameScreenState parentState;
 
   ButtonScreen({
-    this.username
+    this.gameId,
+    this.username,
+    this.isEnabled,
+    this.parentState,
   });
 
   @override
@@ -395,16 +404,28 @@ class ButtonScreen extends StatelessWidget {
         children: <Widget>[
           RaisedButton(
             child: Text("Commit Card and End Turn"),
-            onPressed: () {
+            onPressed: !this.isEnabled ? null : () {
               print("pressed Commit Cards and End Turn");
+              api.endTurnByIdAndUsername(this.gameId, this.username).then((game) {
+                print("got updated game");
+                this.parentState.setState(() {
+                  this.parentState.game = game;
+                });
+              });
             },
           ),
           RaisedButton(
             child: Text("Discard Hand and End Turn"),
-            onPressed: () {
+            onPressed: !this.isEnabled ? null : () {
               print("pressed Discard Hand and End Turn");
+              api.discardHandByIdAndUsername(this.gameId, this.username).then((game) {
+                print("got updated game");
+                this.parentState.setState(() {
+                  this.parentState.game = game;
+                });
+              });
             },
-          )
+          ),
         ],
       ),
     );

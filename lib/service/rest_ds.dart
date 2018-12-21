@@ -13,6 +13,8 @@ class RestDatasource {
   static final REGISTER_PATH = "/user/register";
   static final GAME_PATH = "/game";
   static final START_GAME_PATH = "/game/start";
+  static final END_TURN_PATH = "/game/endTurn";
+  static final DISCARD_HAND_PATH = "/game/discardHand";
 
   Future<User> login(String username, String password) {
     print("Logging in...");
@@ -79,6 +81,28 @@ class RestDatasource {
   Future<Game> getGameByIdAndUsername(String gameId, String username) {
     print("Getting game by id and username");
     String url = BASE_URL + GAME_PATH + "/$gameId" + "/$username";
+
+    return _netUtil
+        .get(url)
+        .then((dynamic res) {
+      return new Game.fromJSON(res);
+    });
+  }
+
+  Future<Game> endTurnByIdAndUsername(String gameId, String username) {
+    print("End turn by id and username");
+    String url = BASE_URL + END_TURN_PATH + "/$gameId" + "/$username";
+
+    return _netUtil
+        .get(url)
+        .then((dynamic res) {
+      return new Game.fromJSON(res);
+    });
+  }
+
+  Future<Game> discardHandByIdAndUsername(String gameId, String username) {
+    print("Discard hand by id and username");
+    String url = BASE_URL + DISCARD_HAND_PATH + "/$gameId" + "/$username";
 
     return _netUtil
         .get(url)

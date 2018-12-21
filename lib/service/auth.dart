@@ -10,11 +10,13 @@ abstract class AuthStateListener {
 }
 
 class AuthStateProvider {
+
   static final AuthStateProvider _instance = new AuthStateProvider.internal();
 
   List<AuthStateListener> _subscribers;
 
   factory AuthStateProvider() => _instance;
+
   AuthStateProvider.internal() {
     _subscribers = new List<AuthStateListener>();
     initState();
