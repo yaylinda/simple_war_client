@@ -67,5 +67,3 @@ fastlane/readme.md
 .flutter-plugins
 .idea/
 *.iml
-android/
-ios/
