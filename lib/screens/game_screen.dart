@@ -40,34 +40,7 @@ class GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     print("***** initing game screen ");
-
-    this.gameInfoScreen = GameInfoScreen(
-      game: this.game,
-      navigateOnClick: false,
-    );
-
-    this.gameStatScreen = GameStatScreen(
-      game: this.game,
-      parentState: this,
-    );
-
-    this.gameBoardScreen = GameBoardScreen(
-      game: this.game,
-      parentState: this,
-    );
-
-    this.handScreen = HandScreen(
-      hand: this.game.cards,
-      isSelectedList: List.filled(this.game.cards.length, false),
-      parentState: this,
-    );
-
-    this.buttonScreen = ButtonScreen(
-      gameId: this.game.id,
-      username: this.game.username,
-      isEnabled: this.game.currentTurn,
-      parentState: this,
-    );
+    this.createChildWidgets(this.game, List.filled(this.game.cards.length, false));
   }
 
   @override
@@ -120,32 +93,44 @@ class GameScreenState extends State<GameScreen> {
     });
   }
 
-  void updateStateWithNewGame(Game game, bool updateGameBoard, bool updateGameStats, bool updateHand) {
+  void updateStateWithNewGame(Game game) {
     print("updating GameScreenState with new game...");
     setState(() {
       this.game = game;
-      if (updateGameBoard) {
-        this.gameBoardScreen = GameBoardScreen(
-          game: game,
-          parentState: this,
-        );
-      }
-      if (updateGameStats) {
-        this.gameStatScreen = GameStatScreen(
-          game: game,
-          parentState: this,
-        );
-      }
-      if (updateHand) {
-        // TODO handList, and isSelectedList
-        // TODO drawCard
-        this.handScreen = HandScreen(
-          hand: ,
-          isSelectedList: ,
-          parentState: this,
-        );
-      }
+      this.createChildWidgets(game, List.filled(this.game.cards.length, false));
     });
+  }
+
+  void createChildWidgets(Game game, List<bool> isSelectedList) {
+    print("creating child widgets");
+
+    this.gameInfoScreen = GameInfoScreen(
+      game: game,
+      navigateOnClick: false,
+    );
+
+    this.gameStatScreen = GameStatScreen(
+      game: game,
+      parentState: this,
+    );
+
+    this.gameBoardScreen = GameBoardScreen(
+      game: game,
+      parentState: this,
+    );
+
+    this.handScreen = HandScreen(
+      hand: game.cards,
+      isSelectedList: isSelectedList,
+      parentState: this,
+    );
+
+    this.buttonScreen = ButtonScreen(
+      gameId: game.id,
+      username: game.username,
+      isEnabled: game.currentTurn,
+      parentState: this,
+    );
   }
 }
 
@@ -273,10 +258,10 @@ class CellScreen extends StatelessWidget {
         print("current gamestate selected card: ${this.parentState.selectedCard}");
         if (this.parentState.selectedCard != null) {
           this.parentState.api.putCardByIdAndUsername(this.parentState.game.id, this.parentState.game.username, this.row, this.col, this.parentState.selectedCard).then((response) {
+            this.parentState.selectedCard = null;
+            this.parentState.updateStateWithNewGame(response.game);
             if (response.status == "SUCCESSFUL") {
               print("got updated game after put card");
-              this.parentState.selectedCard = null;
-              this.parentState.updateStateWithNewGame(response.game, true, true, true);
             } else {
               print("invalid put card placement: '${response.message}'");
               // TODO: show error message to user

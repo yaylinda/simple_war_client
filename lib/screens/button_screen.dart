@@ -25,7 +25,7 @@ class ButtonScreen extends StatelessWidget {
         api.endTurnByIdAndUsername(this.gameId, this.username, discardHand)
             .then((game) {
           print("got updated game after pressing end turn");
-          this.parentState.updateStateWithNewGame(game, true, false, false);
+          this.parentState.updateStateWithNewGame(game);
         });
       },
     );
