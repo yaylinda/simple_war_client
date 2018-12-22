@@ -22,10 +22,12 @@ class GameScreen extends StatefulWidget {
 class GameScreenState extends State<GameScreen> {
 
   final RestDatasource api = new RestDatasource();
+
   Game game;
   GameCard selectedCard;
   int selectedCardIndex;
 
+  BuildContext context;
   GameInfoScreen gameInfoScreen;
   GameStatScreen gameStatScreen;
   GameBoardScreen gameBoardScreen;
@@ -45,6 +47,8 @@ class GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("build GameScreenState...");
+    this.context = context;
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -264,7 +268,7 @@ class CellScreen extends StatelessWidget {
               print("got updated game after put card");
             } else {
               print("invalid put card placement: '${response.message}'");
-              // TODO: show error message to user
+              Scaffold.of(context).showSnackBar(SnackBar(content: Text("${response.message}")));
             }
           });
         }
