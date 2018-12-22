@@ -2,37 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:simple_war_client/models/game_card.dart';
 import 'package:simple_war_client/screens/game_screen.dart';
 
-class HandScreen extends StatefulWidget {
+class HandScreen extends StatelessWidget {
 
   final List<GameCard> hand;
+  final List<bool> isSelectedList;
   final GameScreenState parentState;
 
   HandScreen({
     this.hand,
-    this.parentState,
-  });
-
-  @override
-  HandScreenState createState() =>
-      HandScreenState(
-        hand: this.hand,
-        parentState: this.parentState,
-        isSelectedList: List.filled(this.hand.length, false),
-      );
-}
-
-class HandScreenState extends State<HandScreen> {
-
-  List<GameCard> hand;
-  List<bool> isSelectedList;
-  GameScreenState parentState;
-  
-  HandScreenState({
-    this.hand,
-    this.parentState,
     this.isSelectedList,
+    this.parentState,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -44,19 +25,15 @@ class HandScreenState extends State<HandScreen> {
             gameCard: c,
             handIndex: handIndex,
             isSelected: this.isSelectedList[handIndex],
-            parentState: this,
+            parentScreen: this,
           );
         }).toList(),
       ),
     );
   }
-  
+
   void updateSelectedCard(int handIndexToUpdate, bool isSelected) {
-    setState(() {
-      this.isSelectedList = List.filled(this.hand.length, false);
-      this.isSelectedList[handIndexToUpdate] = isSelected;
-    });
-    this.parentState.updatedSelectedCard(isSelected ? this.hand[handIndexToUpdate] : null);
+    this.parentState.updatedSelectedCard(handIndexToUpdate, isSelected ? this.hand[handIndexToUpdate] : null);
   }
 }
 
@@ -65,13 +42,13 @@ class HandCardScreen extends StatelessWidget {
   final GameCard gameCard;
   final int handIndex;
   final bool isSelected;
-  final HandScreenState parentState;
+  final HandScreen parentScreen;
 
   HandCardScreen({
     this.gameCard,
     this.handIndex,
     this.isSelected,
-    this.parentState,
+    this.parentScreen,
   });
 
   @override
@@ -136,10 +113,9 @@ class HandCardScreen extends StatelessWidget {
         ),
       ),
       onTap: () {
-        if (this.parentState.parentState.game.currentTurn) {
-          print(
-              "tapped... handIndex: ${this.handIndex} - ${this.gameCard.type}");
-          this.parentState.updateSelectedCard(
+        if (this.parentScreen.parentState.game.currentTurn) {
+          print("tapped... handIndex: ${this.handIndex} - ${this.gameCard.type}");
+          this.parentScreen.updateSelectedCard(
               this.handIndex, !this.isSelected);
         }
       },

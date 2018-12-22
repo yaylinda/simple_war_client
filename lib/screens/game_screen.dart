@@ -24,10 +24,51 @@ class GameScreenState extends State<GameScreen> {
   final RestDatasource api = new RestDatasource();
   Game game;
   GameCard selectedCard;
+  int selectedCardIndex;
+
+  GameInfoScreen gameInfoScreen;
+  GameStatScreen gameStatScreen;
+  GameBoardScreen gameBoardScreen;
+  HandScreen handScreen;
+  ButtonScreen buttonScreen;
 
   GameScreenState({
     this.game
   });
+
+  @override
+  void initState() {
+    super.initState();
+    print("***** initing game screen ");
+
+    this.gameInfoScreen = GameInfoScreen(
+      game: this.game,
+      navigateOnClick: false,
+    );
+
+    this.gameStatScreen = GameStatScreen(
+      game: this.game,
+      parentState: this,
+    );
+
+    this.gameBoardScreen = GameBoardScreen(
+      game: this.game,
+      parentState: this,
+    );
+
+    this.handScreen = HandScreen(
+      hand: this.game.cards,
+      isSelectedList: List.filled(this.game.cards.length, false),
+      parentState: this,
+    );
+
+    this.buttonScreen = ButtonScreen(
+      gameId: this.game.id,
+      username: this.game.username,
+      isEnabled: this.game.currentTurn,
+      parentState: this,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,28 +88,11 @@ class GameScreenState extends State<GameScreen> {
         ),
         body: Column(
           children: <Widget>[
-            GameInfoScreen(
-              game: this.game,
-              navigateOnClick: false,
-            ),
-            GameStatScreen(
-              game: this.game,
-              parentState: this,
-            ),
-            GameBoardScreen(
-              game: this.game,
-              parentState: this,
-            ),
-            HandScreen(
-              hand: this.game.cards,
-              parentState: this,
-            ),
-            ButtonScreen(
-              gameId: this.game.id,
-              username: this.game.username,
-              isEnabled: this.game.currentTurn,
-              parentState: this,
-            )
+            gameInfoScreen,
+            gameStatScreen,
+            gameBoardScreen,
+            handScreen,
+            buttonScreen,
           ],
         ),
         backgroundColor: Colors.lightBlueAccent,
@@ -76,9 +100,52 @@ class GameScreenState extends State<GameScreen> {
     );
   }
 
-  void updatedSelectedCard(GameCard selectedCard) {
-    print("update selected card of gamestate to $selectedCard");
+  void updatedSelectedCard(int selectedCardIndex, GameCard selectedCard) {
+    print("update selected card of gamestate to $selectedCard, selectedCardIndex=$selectedCardIndex");
     this.selectedCard = selectedCard;
+    this.selectedCardIndex = selectedCardIndex;
+
+    List<bool> isSelectedList = List.filled(this.game.cards.length, false);
+
+    if (selectedCard != null) {
+      isSelectedList[selectedCardIndex] = true;
+    }
+
+    setState(() {
+      this.handScreen = HandScreen(
+        hand: this.game.cards,
+        isSelectedList: isSelectedList,
+        parentState: this,
+      );
+    });
+  }
+
+  void updateStateWithNewGame(Game game, bool updateGameBoard, bool updateGameStats, bool updateHand) {
+    print("updating GameScreenState with new game...");
+    setState(() {
+      this.game = game;
+      if (updateGameBoard) {
+        this.gameBoardScreen = GameBoardScreen(
+          game: game,
+          parentState: this,
+        );
+      }
+      if (updateGameStats) {
+        this.gameStatScreen = GameStatScreen(
+          game: game,
+          parentState: this,
+        );
+      }
+      if (updateHand) {
+        // TODO handList, and isSelectedList
+        // TODO drawCard
+        this.handScreen = HandScreen(
+          hand: ,
+          isSelectedList: ,
+          parentState: this,
+        );
+      }
+    });
   }
 }
 
@@ -205,11 +272,15 @@ class CellScreen extends StatelessWidget {
         print("tapped... row:${this.row}, col:${this.col} - ${this.cell.state}");
         print("current gamestate selected card: ${this.parentState.selectedCard}");
         if (this.parentState.selectedCard != null) {
-          this.parentState.api.putCardByIdAndUsername(this.parentState.game.id, this.parentState.game.username, this.row, this.col, this.parentState.selectedCard).then((game) {
-            this.parentState.setState(() {
-              print("got updated game");
-              this.parentState.game = game;
-            });
+          this.parentState.api.putCardByIdAndUsername(this.parentState.game.id, this.parentState.game.username, this.row, this.col, this.parentState.selectedCard).then((response) {
+            if (response.status == "SUCCESSFUL") {
+              print("got updated game after put card");
+              this.parentState.selectedCard = null;
+              this.parentState.updateStateWithNewGame(response.game, true, true, true);
+            } else {
+              print("invalid put card placement: '${response.message}'");
+              // TODO: show error message to user
+            }
           });
         }
       },

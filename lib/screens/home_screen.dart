@@ -29,7 +29,7 @@ class HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    print("**** initing home screen");
+    print("***** initing home screen");
     if (this.username == null) {
       print("username in HomeScreen initState is null...");
       this.getUsername().then((value) {

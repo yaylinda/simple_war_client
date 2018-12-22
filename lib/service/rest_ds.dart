@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:simple_war_client/models/game.dart';
 import 'package:simple_war_client/models/game_card.dart';
+import 'package:simple_war_client/models/put_card_response.dart';
 import 'package:simple_war_client/models/user.dart';
 import 'package:simple_war_client/service/network_util.dart';
 
@@ -101,7 +102,7 @@ class RestDatasource {
     });
   }
 
-  Future<Game> putCardByIdAndUsername(String gameId, String username, int row, int col, GameCard card) {
+  Future<PutCardResponse> putCardByIdAndUsername(String gameId, String username, int row, int col, GameCard card) {
     print("Putting card...");
     String loginUrl = BASE_URL + PUT_CARD_PATH + "/$gameId/$username";
 
@@ -114,7 +115,7 @@ class RestDatasource {
     return _netUtil
         .put(loginUrl, body)
         .then((dynamic res) {
-      return new Game.fromJSON(res);
+      return new PutCardResponse.fromJSON(res);
     });
   }
 
