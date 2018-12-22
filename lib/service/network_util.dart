@@ -52,4 +52,25 @@ class NetworkUtil {
       return _decoder.convert(res);
     });
   }
+
+  Future<dynamic> put(String url, Map body) {
+    print("Making PUT request to " + url);
+    print("...with body: " + body.toString());
+
+    return http
+        .put(url, body: _encoder.convert(body), headers: _defaultHeaders)
+        .then((http.Response response) {
+
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+
+      print("Result: statusCode=$statusCode, body=$res");
+
+      if (statusCode < 200 || statusCode >= 400) {
+        throw new Exception("$res");
+      }
+
+      return _decoder.convert(res);
+    });
+  }
 }

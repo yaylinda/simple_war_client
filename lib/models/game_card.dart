@@ -34,4 +34,16 @@ class GameCard {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'type': this.type,
+      'might': this.might,
+      'movement': this.movement,
+      'cost': this.cost,
+      'owner': this.owner,
+      'numTurnsOnBoard': this.numTurnsOnBoard,
+      'specialAbility': this.specialAbility,
+    };
+  }
+
 }

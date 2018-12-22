@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_war_client/models/cell.dart';
 import 'package:simple_war_client/models/game.dart';
 import 'package:simple_war_client/models/game_card.dart';
+import 'package:simple_war_client/screens/button_screen.dart';
 import 'package:simple_war_client/screens/hand_screen.dart';
 import 'package:simple_war_client/screens/home_screen.dart';
 import 'package:simple_war_client/service/rest_ds.dart';
@@ -10,7 +11,9 @@ class GameScreen extends StatefulWidget {
 
   final Game game;
 
-  GameScreen({this.game});
+  GameScreen({
+    this.game,
+  });
 
   @override
   GameScreenState createState() => GameScreenState(game: game);
@@ -20,6 +23,7 @@ class GameScreenState extends State<GameScreen> {
 
   final RestDatasource api = new RestDatasource();
   Game game;
+  GameCard selectedCard;
 
   GameScreenState({
     this.game
@@ -49,12 +53,15 @@ class GameScreenState extends State<GameScreen> {
             ),
             GameStatScreen(
               game: this.game,
+              parentState: this,
             ),
             GameBoardScreen(
               game: this.game,
+              parentState: this,
             ),
             HandScreen(
               hand: this.game.cards,
+              parentState: this,
             ),
             ButtonScreen(
               gameId: this.game.id,
@@ -68,14 +75,21 @@ class GameScreenState extends State<GameScreen> {
       ),
     );
   }
+
+  void updatedSelectedCard(GameCard selectedCard) {
+    print("update selected card of gamestate to $selectedCard");
+    this.selectedCard = selectedCard;
+  }
 }
 
 class GameStatScreen extends StatelessWidget {
 
   final Game game;
+  final GameScreenState parentState;
 
   GameStatScreen({
-    this.game
+    this.game,
+    this.parentState,
   });
 
   @override
@@ -110,9 +124,11 @@ class GameStatScreen extends StatelessWidget {
 class GameBoardScreen extends StatelessWidget {
 
   final Game game;
+  final GameScreenState parentState;
 
   GameBoardScreen({
-    this.game
+    this.game,
+    this.parentState,
   });
 
   @override
@@ -140,6 +156,7 @@ class GameBoardScreen extends StatelessWidget {
                   username: this.game.username,
                   row: rowNum,
                   col: colNum,
+                  parentState: this.parentState,
                 );
               }).toList(),
             );
@@ -156,12 +173,14 @@ class CellScreen extends StatelessWidget {
   final String username;
   final int row;
   final int col;
+  final GameScreenState parentState;
 
   CellScreen({
     this.cell,
     this.username,
     this.row,
     this.col,
+    this.parentState,
   });
 
   @override
@@ -183,8 +202,16 @@ class CellScreen extends StatelessWidget {
         ),
       ),
       onTap: () {
-        print(
-            "tapped... row:${this.row}, col:${this.col} - ${this.cell.state}");
+        print("tapped... row:${this.row}, col:${this.col} - ${this.cell.state}");
+        print("current gamestate selected card: ${this.parentState.selectedCard}");
+        if (this.parentState.selectedCard != null) {
+          this.parentState.api.putCardByIdAndUsername(this.parentState.game.id, this.parentState.game.username, this.row, this.col, this.parentState.selectedCard).then((game) {
+            this.parentState.setState(() {
+              print("got updated game");
+              this.parentState.game = game;
+            });
+          });
+        }
       },
     );
   }
@@ -244,50 +271,6 @@ class GameCardScreen extends StatelessWidget {
           ],
         )
       ],
-    );
-  }
-}
-
-class ButtonScreen extends StatelessWidget {
-
-  final RestDatasource api = new RestDatasource();
-  final String gameId;
-  final String username;
-  final bool isEnabled;
-  final GameScreenState parentState;
-
-  ButtonScreen({
-    this.gameId,
-    this.username,
-    this.isEnabled,
-    this.parentState,
-  });
-
-  RaisedButton createEndTurnButton(String buttonText, bool discardHand) {
-    return RaisedButton(
-      child: Text(buttonText),
-      onPressed: !this.isEnabled ? null : () {
-        print("pressed $buttonText");
-        api.endTurnByIdAndUsername(this.gameId, this.username, discardHand)
-            .then((game) {
-          print("got updated game");
-          this.parentState.setState(() {
-            this.parentState.game = game;
-          });
-        });
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: <Widget>[
-          createEndTurnButton("Commit Cards and End Turn", false),
-          createEndTurnButton("Discard Hand and End Turn", true),
-        ],
-      ),
     );
   }
 }

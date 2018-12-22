@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:simple_war_client/models/game.dart';
+import 'package:simple_war_client/models/game_card.dart';
 import 'package:simple_war_client/models/user.dart';
 import 'package:simple_war_client/service/network_util.dart';
 
@@ -14,7 +15,7 @@ class RestDatasource {
   static final GAME_PATH = "/game";
   static final START_GAME_PATH = "/game/start";
   static final END_TURN_PATH = "/game/endTurn";
-  static final DISCARD_HAND_PATH = "/game/discardHand";
+  static final PUT_CARD_PATH = "/game/putCard";
 
   Future<User> login(String username, String password) {
     print("Logging in...");
@@ -95,6 +96,23 @@ class RestDatasource {
 
     return _netUtil
         .get(url)
+        .then((dynamic res) {
+      return new Game.fromJSON(res);
+    });
+  }
+
+  Future<Game> putCardByIdAndUsername(String gameId, String username, int row, int col, GameCard card) {
+    print("Putting card...");
+    String loginUrl = BASE_URL + PUT_CARD_PATH + "/$gameId/$username";
+
+    Map body = {
+      "row" : row,
+      "col" : col,
+      "card" : card.toJson(),
+    };
+
+    return _netUtil
+        .put(loginUrl, body)
         .then((dynamic res) {
       return new Game.fromJSON(res);
     });
