@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:simple_war_client/models/cell.dart';
 import 'package:simple_war_client/models/game.dart';
@@ -34,6 +36,8 @@ class GameScreenState extends State<GameScreen> {
   HandScreen handScreen;
   ButtonScreen buttonScreen;
 
+  Timer timer;
+
   GameScreenState({
     this.game
   });
@@ -43,11 +47,22 @@ class GameScreenState extends State<GameScreen> {
     super.initState();
     print("***** initing game screen ");
     this.createChildWidgets(this.game, List.filled(this.game.cards.length, false));
+
+    if (!this.game.currentTurn) {
+      print("not currentTurn... setting up polling timer");
+      this.setUpTimedPoller();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     print("build GameScreenState...");
+
+    if (!this.game.currentTurn && timer == null) {
+      print("not currentTurn and timer is null... setting up polling timer") ;
+      this.setUpTimedPoller();
+    }
+
     this.context = context;
     return WillPopScope(
       onWillPop: () async => false,
@@ -77,6 +92,13 @@ class GameScreenState extends State<GameScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    print("dispose GameScreen is called");
+    this.timer?.cancel();
+    super.dispose();
+  }
+
   void updatedSelectedCard(int selectedCardIndex, GameCard selectedCard) {
     print("update selected card of gamestate to $selectedCard, selectedCardIndex=$selectedCardIndex");
     this.selectedCard = selectedCard;
@@ -102,6 +124,20 @@ class GameScreenState extends State<GameScreen> {
     setState(() {
       this.game = game;
       this.createChildWidgets(game, List.filled(this.game.cards.length, false));
+    });
+  }
+
+  void setUpTimedPoller() {
+    timer = Timer.periodic(Duration(seconds: 5), (Timer t) {
+      print("polling server for updated game state...");
+      api.getGameByIdAndUsername(this.game.id, this.game.username).then((newGame) {
+        if (newGame.md5Hash != this.game.md5Hash) {
+          print("game hashes are different");
+          this.updateStateWithNewGame(newGame);
+        } else {
+          print("game hashes are the same");
+        }
+      });
     });
   }
 
